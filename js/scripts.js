@@ -35,7 +35,7 @@ const calcView = {
 
     checkFormat(symbol) {
         if(this.operators.includes(symbol) && this.out.length === 0) {
-            console.log('Invalid format used.');
+            alert('Invalid format used.');
             return true;
         }
 
@@ -68,7 +68,7 @@ const controller = {
             
             case '=':
                 if(calcView.operators.includes(calcView.out[calcView.out.length - 1])){
-                    console.log('Invalid format used.');
+                    alert('Invalid format used.');
                     break;
                 }
 
@@ -81,14 +81,14 @@ const controller = {
                 // ERRORS
                 // i) 0 / 0 division by zero
                 if(!ans) {
-                    console.log('Invalid format used.');
+                    alert('Invalid format used.');
                     break;
 
                 }
 
                 // ii) x / 0 integer dividing zero
                 if(String(ans) === 'Infinity') {
-                    console.log("Can't divide by zero.");
+                    alert("Can't divide by zero.");
                     break;
                 }
                 
