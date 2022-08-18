@@ -78,6 +78,20 @@ const controller = {
                 // operate
                 const ans = operate(calcView.op, +calcView.lOp, +calcView.rOp);
 
+                // ERRORS
+                // i) 0 / 0 division by zero
+                if(!ans) {
+                    console.log('Invalid format used.');
+                    break;
+
+                }
+
+                // ii) x / 0 integer dividing zero
+                if(String(ans) === 'Infinity') {
+                    console.log("Can't divide by zero.");
+                    break;
+                }
+                
                 calcView.clear();
                 calcView.out.push(ans);
                 calcView.render();
