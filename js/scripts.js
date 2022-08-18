@@ -1,23 +1,51 @@
 "use strict";
 
+function operate(op, lOp, rOp) {
+    switch(op) {
+        case "+":
+            return lOp + rOp;
+        case "−":
+            return lOp - rOp;
+        case "×":
+            return lOp * rOp;
+        case "÷":
+            return lOp / rOp;
+    }
+}
+
 const calcView = {
+    op: '',
     out:[],
+    res: '',
+    lOp: '',
+    rOp: '',
     operators: '÷×−+',
     isOperator: false,
     nodeOut: document.querySelector('.out'),
+    nodeRes: document.querySelector('.res'),
     nodeContainer: document.querySelector('.container'),
 
-    populate() {
+    render() {
         this.nodeOut.textContent = this.out.join(' ');
     },
 
+    clear() {
+        this.out = [];
+    },
+
     checkFormat(symbol) {
-        if('÷×−+'.includes(symbol) && this.out.length === 0) {
+        if(this.operators.includes(symbol) && this.out.length === 0) {
             console.log('Invalid format used.');
             return true;
         }
-        // check for operator
-        this.isOperator = '÷×−+'.includes(this.out[this.out.length - 1])? true: false;
+
+        this.isOperator = this.operators.includes(this.out[this.out.length - 1])? true: false;
+    },
+
+    getParams() {
+        this.op = this.out[this.out.findIndex(el => this.operators.includes(el))];
+        this.lOp = this.out.join('').split(this.op)[0];
+        this.rOp = this.out.join('').split(this.op)[1];
     },
 
     handleClick(handle) {
@@ -32,18 +60,40 @@ const controller = {
 
         const symbol = e.target.innerText;
 
-        if(symbol === 'c' || symbol === '=')
-            return;
-        
-        if(calcView.checkFormat(symbol))
-            return;
+        switch(symbol) {            
+            case 'c':
+                calcView.clear();
+                calcView.render();
+                break;
+            
+            case '=':
+                if(calcView.operators.includes(calcView.out[calcView.out.length - 1])){
+                    console.log('Invalid format used.');
+                    break;
+                }
 
-        if(calcView.isOperator && '÷×−+'.includes(symbol))
-            calcView.out[calcView.out.length - 1] = symbol;
-        else
-            calcView.out.push(symbol);
+                // get parameters from string.
+                calcView.getParams();
 
-        calcView.populate();
+                // operate
+                const ans = operate(calcView.op, +calcView.lOp, +calcView.rOp);
+
+                calcView.clear();
+                calcView.out.push(ans);
+                calcView.render();
+                break;
+            
+            default:
+                if(calcView.checkFormat(symbol))
+                    return;
+
+                if(calcView.isOperator && calcView.operators.includes(symbol))
+                    calcView.out[calcView.out.length - 1] = symbol;
+                else
+                    calcView.out.push(symbol);
+
+                calcView.render();
+        }        
     },
 
     init() {
