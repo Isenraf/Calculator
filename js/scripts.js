@@ -2,6 +2,8 @@
 
 const calcView = {
     out:[],
+    operators: '÷×−+',
+    isOperator: false,
     nodeOut: document.querySelector('.out'),
     nodeContainer: document.querySelector('.container'),
 
@@ -9,11 +11,13 @@ const calcView = {
         this.nodeOut.textContent = this.out.join(' ');
     },
 
-    checkFormat() {
-        if('÷×−+'.includes(this.out[0])) {
+    checkFormat(symbol) {
+        if('÷×−+'.includes(symbol) && this.out.length === 0) {
             console.log('Invalid format used.');
-            this.out = [];
+            return true;
         }
+        // check for operator
+        this.isOperator = '÷×−+'.includes(this.out[this.out.length - 1])? true: false;
     },
 
     handleClick(handle) {
@@ -22,7 +26,7 @@ const calcView = {
 };
 
 const controller = {
-    controlClick(e) {
+    controlDisplay(e) {
         if(e.target.localName !== 'button')
             return;
 
@@ -31,13 +35,19 @@ const controller = {
         if(symbol === 'c' || symbol === '=')
             return;
         
-        calcView.out.push(symbol);
-        calcView.checkFormat();
+        if(calcView.checkFormat(symbol))
+            return;
+
+        if(calcView.isOperator && '÷×−+'.includes(symbol))
+            calcView.out[calcView.out.length - 1] = symbol;
+        else
+            calcView.out.push(symbol);
+
         calcView.populate();
     },
 
     init() {
-        calcView.handleClick(this.controlClick);
+        calcView.handleClick(this.controlDisplay);
     }
 }
 
