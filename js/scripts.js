@@ -9,7 +9,21 @@ function operate(op, lOp, rOp) {
         case "×":
             return lOp * rOp;
         case "÷":
-            return lOp / rOp;
+            const result = lOp / rOp;
+
+            // ERRORS
+            // i) 0 / 0 division by zero
+            if(!result) {
+                alert('Invalid format used.');
+                break;
+            }
+
+            // ii) x / 0 integer dividing zero
+            if(String(result) === 'Infinity') {
+                alert("Can't divide by zero.");
+                break;
+            }
+            return result;
     }
 }
 
@@ -19,6 +33,7 @@ const calcView = {
     res: '',
     lOp: '',
     rOp: '',
+    ans: 0,
     operators: '÷×−+',
     isOperator: false,
     nodeOut: document.querySelector('.out'),
@@ -42,7 +57,7 @@ const calcView = {
         this.isOperator = this.operators.includes(this.out[this.out.length - 1])? true: false;
     },
 
-    getParams() {
+    setParams() {
         this.op = this.out[this.out.findIndex(el => this.operators.includes(el))];
         this.lOp = this.out.join('').split(this.op)[0];
         this.rOp = this.out.join('').split(this.op)[1];
@@ -62,6 +77,7 @@ const controller = {
 
         switch(symbol) {            
             case 'c':
+                calcView.ans = 0;
                 calcView.clear();
                 calcView.render();
                 break;
@@ -72,29 +88,19 @@ const controller = {
                     break;
                 }
 
-                // get parameters from string.
-                calcView.getParams();
+                if(calcView.isOperator) {
+                    calcView.isOperator = false;
 
-                // operate
-                const ans = operate(calcView.op, +calcView.lOp, +calcView.rOp);
+                    // get parameters from string.
+                    calcView.setParams();
 
-                // ERRORS
-                // i) 0 / 0 division by zero
-                if(!ans) {
-                    alert('Invalid format used.');
-                    break;
+                    // operate
+                    calcView.ans = operate(calcView.op, +calcView.lOp, +calcView.rOp);
 
+                    calcView.clear();
+                    calcView.out.push(calcView.ans);
+                    calcView.render();
                 }
-
-                // ii) x / 0 integer dividing zero
-                if(String(ans) === 'Infinity') {
-                    alert("Can't divide by zero.");
-                    break;
-                }
-                
-                calcView.clear();
-                calcView.out.push(ans);
-                calcView.render();
                 break;
             
             default:
@@ -103,10 +109,10 @@ const controller = {
 
                 if(calcView.isOperator && calcView.operators.includes(symbol))
                     calcView.out[calcView.out.length - 1] = symbol;
-                else
+                else {
                     calcView.out.push(symbol);
-
-                calcView.render();
+                    calcView.render();
+                }
         }        
     },
 
