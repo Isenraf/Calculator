@@ -79,7 +79,7 @@ const controller = {
 
         switch(symbol) {            
             case 'c':
-                calcView.ans = 0;
+                calcView.ans = '';
                 calcView.clear();
                 calcView.render();
                 break;
