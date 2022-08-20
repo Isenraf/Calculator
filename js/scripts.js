@@ -28,16 +28,10 @@ function operate(op, lOp, rOp) {
 }
 
 const calcView = {
-    op: '',
     out:[],
-    res: '',
-    lOp: '',
-    rOp: '',
-    ans: 0,
+    ans: '',
     operators: '÷×−+',
-    isOperator: false,
     nodeOut: document.querySelector('.out'),
-    nodeRes: document.querySelector('.res'),
     nodeContainer: document.querySelector('.container'),
 
     render() {
@@ -48,19 +42,27 @@ const calcView = {
         this.out = [];
     },
 
+    computeAnswer(exp) {
+        if(exp.findIndex(el => this.operators.includes(el)) === -1){
+            return exp.join('');
+        }
+
+        const op = exp.findIndex(el => this.operators.includes(el));
+        const lOp = exp.slice(0, op).join('');
+        const rOp = exp.slice(op+1);
+
+        return operate(exp[op], +lOp, +this.computeAnswer(rOp));
+    },
+
+    checkOperator() {
+        return this.operators.includes(this.out[this.out.length - 1])? true: false;
+    },
+
     checkFormat(symbol) {
         if(this.operators.includes(symbol) && this.out.length === 0) {
             alert('Invalid format used.');
             return true;
         }
-
-        this.isOperator = this.operators.includes(this.out[this.out.length - 1])? true: false;
-    },
-
-    setParams() {
-        this.op = this.out[this.out.findIndex(el => this.operators.includes(el))];
-        this.lOp = this.out.join('').split(this.op)[0];
-        this.rOp = this.out.join('').split(this.op)[1];
     },
 
     handleClick(handle) {
@@ -88,31 +90,29 @@ const controller = {
                     break;
                 }
 
-                if(calcView.isOperator) {
-                    calcView.isOperator = false;
+                if(calcView.out.length === 0) return;
 
-                    // get parameters from string.
-                    calcView.setParams();
+                calcView.ans = String(calcView.computeAnswer(calcView.out));
 
-                    // operate
-                    calcView.ans = operate(calcView.op, +calcView.lOp, +calcView.rOp);
+                if(calcView.ans === 'undefined') return;
 
-                    calcView.clear();
-                    calcView.out.push(calcView.ans);
-                    calcView.render();
-                }
+                calcView.clear();
+                calcView.out.push(calcView.ans);
+                calcView.render();
                 break;
             
             default:
                 if(calcView.checkFormat(symbol))
                     return;
 
-                if(calcView.isOperator && calcView.operators.includes(symbol))
+                if(calcView.checkOperator() && calcView.operators.includes(symbol)) {
                     calcView.out[calcView.out.length - 1] = symbol;
-                else {
-                    calcView.out.push(symbol);
                     calcView.render();
+                    return;
                 }
+
+                calcView.out.push(symbol);
+                calcView.render();
         }        
     },
 
