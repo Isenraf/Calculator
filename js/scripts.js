@@ -32,14 +32,23 @@ const calcView = {
     ans: '',
     operators: '÷×−+',
     nodeOut: document.querySelector('.out'),
+    nodeRes: document.querySelector('.res'),
     nodeContainer: document.querySelector('.container'),
 
     render() {
         this.nodeOut.textContent = this.out.join(' ');
     },
 
+    renderResult() {
+        this.nodeRes.textContent = String(this.computeAnswer(this.out));
+    },
+
     clear() {
         this.out = [];
+    },
+
+    clearResult() {
+        this.nodeRes.textContent = '';
     },
 
     computeAnswer(exp) {
@@ -77,7 +86,11 @@ const controller = {
 
         const symbol = e.target.innerText;
 
-        switch(symbol) {            
+        switch(symbol) {      
+            case '±':
+                // something to do...
+                break;
+
             case 'c':
                 calcView.ans = '';
                 calcView.clear();
@@ -97,11 +110,25 @@ const controller = {
                 if(calcView.ans === 'undefined') return;
 
                 calcView.clear();
-                calcView.out.push(calcView.ans);
-                calcView.render();
+                calcView.clearResult();
+                calcView.nodeOut.textContent = calcView.ans;
                 break;
             
             default:
+                if(calcView.ans !== '' && !calcView.operators.includes(symbol)) {
+                    calcView.out.push(symbol);
+                    calcView.render();
+                    calcView.ans = '';
+                    return;
+                }
+
+                if(calcView.ans !== '' && calcView.operators.includes(symbol)) {
+                    calcView.out.push(calcView.ans, symbol);
+                    calcView.render();
+                    calcView.ans = '';
+                    return;
+                }
+
                 if(calcView.checkFormat(symbol))
                     return;
 
@@ -111,8 +138,16 @@ const controller = {
                     return;
                 }
 
+                if(calcView.checkOperator() && !calcView.operators.includes(symbol)) {
+                    calcView.out.push(symbol);
+                    calcView.render();
+                    calcView.renderResult();
+                    return;
+                }
+
                 calcView.out.push(symbol);
                 calcView.render();
+                calcView.clearResult();
         }        
     },
 
