@@ -130,12 +130,14 @@ const controller = {
                 if(calcView.ans === 'undefined') return;
 
                 calcView.clear();
+                calcView.out.push( calcView.ans);
+                calcView.render();
                 calcView.clearResult();
-                calcView.nodeOut.textContent = calcView.ans;
                 break;
             
             default:
                 if(calcView.ans !== '' && !calcView.operators.includes(symbol)) {
+                    calcView.clear();
                     calcView.out.push(symbol);
                     calcView.render();
                     calcView.ans = '';
@@ -143,7 +145,7 @@ const controller = {
                 }
 
                 if(calcView.ans !== '' && calcView.operators.includes(symbol)) {
-                    calcView.out.push(calcView.ans, symbol);
+                    calcView.out.push(symbol);
                     calcView.render();
                     calcView.ans = '';
                     return;
