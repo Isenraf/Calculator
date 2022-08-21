@@ -9,7 +9,7 @@ function operate(op, lOp, rOp) {
         case "×":
             return lOp * rOp;
         case "÷":
-            const result = lOp / rOp;
+            const result = (lOp / rOp).toFixed(2);
 
             // ERRORS
             // i) 0 / 0 division by zero
@@ -31,6 +31,7 @@ const calcView = {
     out:[],
     ans: '',
     operators: '÷×−+',
+    nodeDel: document.querySelector('.del'),
     nodeOut: document.querySelector('.out'),
     nodeRes: document.querySelector('.res'),
     nodeContainer: document.querySelector('.container'),
@@ -49,6 +50,10 @@ const calcView = {
 
     clearResult() {
         this.nodeRes.textContent = '';
+    },
+
+    delete() {
+        this.out.splice(calcView.out.length - 1, 1);
     },
 
     computeAnswer(exp) {
@@ -76,10 +81,21 @@ const calcView = {
 
     handleClick(handle) {
         this.nodeContainer.addEventListener('click', handle);
+    },
+
+    handleSVG(handle) {
+        this.nodeDel.addEventListener('click', handle)
     }
 };
 
 const controller = {
+    controlSVG(e) {
+        if(calcView.out.length !== 0) {
+            calcView.delete()
+            calcView.render();
+            calcView.clearResult();
+        }
+    },
     controlDisplay(e) {
         if(e.target.localName !== 'button')
             return;
@@ -88,12 +104,16 @@ const controller = {
 
         switch(symbol) {      
             case '±':
-                // something to do...
+                if(!calcView.ans) return;
+
+                calcView.ans = String(Math.abs(Number(calcView.ans)));
+                calcView.nodeOut.textContent = calcView.ans;
                 break;
 
             case 'c':
                 calcView.ans = '';
                 calcView.clear();
+                calcView.clearResult();
                 calcView.render();
                 break;
             
@@ -153,6 +173,7 @@ const controller = {
 
     init() {
         calcView.handleClick(this.controlDisplay);
+        calcView.handleSVG(this.controlSVG);
     }
 }
 

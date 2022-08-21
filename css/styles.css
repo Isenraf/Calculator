@@ -72,6 +72,10 @@ main {
     align-items: flex-end;
 }
 
+.res {
+    opacity: 0.8;
+}
+
 .line {
     grid-row: 2 / 3;
     grid-column: 1 /  -1;
